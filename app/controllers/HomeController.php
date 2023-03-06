@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Controllers;
+use App\Core\Controller;
 
-class HomeController {
+class HomeController extends Controller{
 
     public function index() {
-        echo 'home';
+        $this->loadView('home');
     }
 }

@@ -5,8 +5,10 @@ namespace App\Core;
 use App\Controllers\HomeController;
 use App\Controllers\ErrorHandlerController;
 
-class Core {
+class Core {    
     public function start() {
+        $errorController = new ErrorHandlerController();
+        $homeController = new HomeController();
         $url = '/';
 
         if(isset($_GET['url'])) {
@@ -19,9 +21,9 @@ class Core {
             $url = explode('/', $url);
             array_shift($url);
             
-            $currentController = ucfirst($url[0]).'Controller';
+            $currentController = "\\App\\Controllers\\".(ucfirst($url[0]).'Controller');
             array_shift($url);
-
+            // var_dump($currentController);
             $currentAction = (isset($url[0]) && !empty($url[0])) ? $url[0]  : 'index';
             array_shift($url);
 
@@ -30,8 +32,13 @@ class Core {
             }
 
         }else {
-            $currentController = 'HomeController';
+            $currentController = $homeController;
+            // var_dump($currentController);
             $currentAction = 'index';
+            $controller = new $currentController();
+            // var_dump($controller);
+            call_user_func(array($controller, $currentAction), $parameters);
+            return;
         }
 
         // Verify if the controller actually exists and if not, redirect to 404 page
@@ -40,19 +47,19 @@ class Core {
             if (method_exists($controller, $currentAction)) {
                 call_user_func_array(array($controller, $currentAction), $parameters);
             } else {
-                $currentController = new ErrorHandlerController;
+                $currentController = $errorController;
                 $currentAction = 'pageNotFound';
                 $parameters = [];
                 $controller = new $currentController();
                 call_user_func_array(array($controller, $currentAction), $parameters);
-            }
+            }            
         } else {
-            // $currentController = new ErrorHandlerController();
-            // $currentAction = 'pageNotFound';
+            $currentController = $errorController;
+            $currentAction = 'pageNotFound';
             $parameters = [];
-            // $controller = new $currentController();
-            call_user_func_array(array(new ErrorHandlerController(), $currentAction), $parameters);
+            $controller = new $currentController();
+            call_user_func_array(array($controller, $currentAction), $parameters);
         }
-
+        
     }
 }
