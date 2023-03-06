@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Controllers;
-class ErrorHandlerController {
+
+use App\Core\Controller;
+class ErrorHandlerController extends Controller {
 
     public function pageNotFound() {
-        echo '404 PAGE NOT FOUND!!';
+        $this->render('error-pages/404');
     }
 
     public function invalidParameters() {

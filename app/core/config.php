@@ -1,28 +1,27 @@
 <?php
 
 require 'environment.php';
-
-$config = [];
+// $config = [];
 
 if(ENVIROMENT === 'development') {
     define("BASE_URL", "http://localhost/mvcscratch/public");
-    $config['db_name'] = 'mvc';
-    $config['db_host'] = 'localhost';
-    $config['db_user'] = 'root';
-    $config['db_pass'] = '';
+    define("DB_NAME", "mvc");
+    define("DB_HOST", "localhost");
+    define("DB_USER", "root");
+    define("DB_PASS", "");
 }else {
     // define("BASE_URL", "https://www.mywebsite.com");
-    // $config['db_name'] = 'firsttry';
-    // $config['db_host'] = 'localhost';
-    // $config['db_user'] = 'root';
-    // $config['db_pass'] = '';
+    define("DB_NAME", "mvc");
+    define("DB_HOST", "localhost");
+    define("DB_USER", "root");
+    define("DB_PASS", "");
 }
 
-global $db;
+// global $db;
 
-try {    
-    $db = new PDO("mysql:dbname=".$config['db_name'].";host=".$config['db_host'], $config['db_user'], $config['db_pass']);
-} catch (PDOException $e) {
-    echo "ERROR:" . $e->getMessage();
-    exit;    
-}
+// try {    
+//     $db = new PDO("mysql:dbname=".DB_NAME.";host=".DB_HOST, DB_USER, DB_PASS);
+// } catch (PDOException $e) {
+//     echo "ERROR:" . $e->getMessage();
+//     exit;    
+// }

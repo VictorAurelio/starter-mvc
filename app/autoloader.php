@@ -1,4 +1,5 @@
 <?php
+require 'Core/config.php';
 
 spl_autoload_register(function ($class) {
     $file = str_replace('\\', '/', $class) . '.php';
@@ -8,4 +9,5 @@ spl_autoload_register(function ($class) {
         return;
     }
     // var_dump($file);
+    define('DEBUG', true);
 });
