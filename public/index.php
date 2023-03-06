@@ -1,15 +1,14 @@
 <?php
-session_abort();
+session_start();
 
-require __DIR__ . '/../app/core/config.php';
-require __DIR__ . '/../vendor/autoloader.php';
-require_once '../app/core/Core.php';
+require_once '../App/autoloader.php';
+// require __DIR__ . '/../App/Core/Config.php';
 
-use App\Core\Core;
+// require '../App/Core/Core.php';
 
-$core = new Core();
+
+$core = new \App\Core\Core();
 $core->start();
-
 
 
 
