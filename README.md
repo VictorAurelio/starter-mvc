@@ -1,10 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Mini MVC Framework</title>
-</head>
 <body>
   <h1>My Mini MVC Framework</h1>
   <p>A lightweight PHP MVC framework for building web applications.</p>
