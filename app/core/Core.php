@@ -4,16 +4,31 @@ namespace App\Core;
 
 use App\Controllers\HomeController;
 use App\Controllers\ErrorHandlerController;
+use App\Framework\Routing\Route;
+use App\Framework\Routing\Router;
 
-class Core {    
+
+class Core {        
+    // protected $url = '/';
+    // public function __construct($url) {
+    //     $this->url = $url;
+    // }
     public function start() {
         $errorController = new ErrorHandlerController();
         $homeController = new HomeController();
-        $url = '/';
+
+        $url = '/';        
 
         if(isset($_GET['url'])) {
             $url .= $_GET['url'];
         }
+
+        $route = new Route();
+        $routes = $route->getRoutes();
+        var_dump($routes);
+
+        $route = new Router($url, $routes);
+        $route->checkRoutes();
 
         $parameters = [];        
 

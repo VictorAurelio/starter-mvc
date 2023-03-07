@@ -8,7 +8,8 @@ use PDOException;
  * Summary of Database
  * I decided to declare Database as a trait in order to be able to use it onto Model.php and still have it(model) as a trait as well.
  */
-trait Database {
+trait Database{
+    use \Config;
     protected $db;
     // public function __construct() {
     //     global $db;
@@ -16,6 +17,7 @@ trait Database {
     // }
 
     private function connect() {
+        $this->environmentType();
         try {    
             $this->db = new PDO("mysql:dbname=".DB_NAME.";host=".DB_HOST, DB_USER, DB_PASS);
         } catch (PDOException $e) {

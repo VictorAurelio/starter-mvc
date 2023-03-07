@@ -96,11 +96,11 @@ trait Model {
 			}
 		}
 		$keys = array_keys($data);
-        var_dump($keys);
-        echo '<br>';
+        // var_dump($keys);
+        // echo '<br>';
 		$query = "INSERT INTO $this->table (".implode(",", $keys).") VALUES (:".implode(",:", $keys).")";
-        var_dump($query);
-        echo '<br>';
+        // var_dump($query);
+        // echo '<br>';
 		$this->query($query, $data);
 		return false;
 	}
