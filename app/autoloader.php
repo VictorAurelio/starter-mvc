@@ -1,6 +1,9 @@
 <?php
 require 'Core/config.php';
 
+define('ROOT', 'https://localhost/mvcscratch/App/');
+define("ENVIROMENT", "development");
+
 spl_autoload_register(function ($class) {
     $file = str_replace('\\', '/', $class) . '.php';
     $path = __DIR__ . '/../' . $file; // add base directory path

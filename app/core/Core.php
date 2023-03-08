@@ -7,8 +7,10 @@ use App\Controllers\ErrorHandlerController;
 use App\Core\Routing\Router;
 
 
-class Core {      
-
+class Core {
+    public function __construct() {
+        $this->runMiddleware();
+    }
     public function runMiddleware()   {
         require_once('cors.php');
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -28,7 +30,7 @@ class Core {
 
         $router = new Router($url);
         $router->loadRoutes('routes.php');
-        $router->checkRoutes();
+        $url = $router->checkRoutes();       
 
         $parameters = [];        
 

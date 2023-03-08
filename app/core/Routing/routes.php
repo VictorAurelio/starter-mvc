@@ -1,10 +1,9 @@
 <?php
 
 return [
-    'user/profile/{id}' => 'user/profile/:id',
-    'product/list' => 'product/list',
-    'product/add' => 'product/add',
-    // 'POST|user/signup' => 'UserController@signup'
+    '/user/profile/{id}' => '/user/profile/:id',
+    '/product/list' => '/product/list',
+    '/product' => '/product/add',
 ];
 
 // return [

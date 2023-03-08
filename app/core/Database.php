@@ -11,11 +11,6 @@ use PDOException;
 trait Database{
     use \Config;
     protected $db;
-    // public function __construct() {
-    //     global $db;
-    //     $this->db = $db;
-    // }
-
     private function connect() {
         $this->environmentType();
         try {    

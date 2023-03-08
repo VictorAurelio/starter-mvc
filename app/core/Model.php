@@ -5,7 +5,7 @@ use PDO;
 
 /**
  * Summary of Model
- * Declared as Trait since I'll be using another model for products only, this one is for database general settings.
+ * Declared as Trait since I'll be using another model for products only, this one is for sql queries
  */
 trait Model {    
     use Database;

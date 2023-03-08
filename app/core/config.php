@@ -1,7 +1,5 @@
 <?php
 
-require 'environment.php';
-
 trait Config {
     public function environmentType() {
         if(ENVIROMENT === 'development') {
