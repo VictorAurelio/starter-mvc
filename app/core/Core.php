@@ -9,9 +9,9 @@ use App\Core\Routing\Router;
 
 class Core {
     public function __construct() {
-        $this->runMiddleware();
+        $this->configureCors();
     }
-    public function runMiddleware()   {
+    public function configureCors()   {
         require_once('cors.php');
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             setCorsHeaders();

@@ -20,14 +20,12 @@ class Controller {
     }
     public function getRequestData() {
         $method = $this->getMethod();
-        $handlers = [
-            'GET' => function () { return $_GET; },
-            'POST' => function () { return $this->getJsonData() ?? $_POST; },
-            'PUT' => function () { return $this->getJsonData(); },
-            'DELETE' => function () { return $this->getJsonData(); },
-        ];
-        $handler = $handlers[$method] ?? null;
-        $data = $handler ? $handler() : null;
+        $data = match($method) {
+            'GET' => $_GET,
+            'POST' => $this->getJsonData() ?? $_POST,
+            'PUT', 'DELETE' => $this->getJsonData(),
+            default => null,
+        };
         if (!is_array($data)) {
             throw new Exception('Invalid request data');
         }
@@ -45,7 +43,7 @@ class Controller {
         }
         return $json;
     }
-    public function returnJson($data, $status = 200) {
+    public function json($data, $status = 200) {
         ob_clean(); // Clear the output buffer
         http_response_code($status);
         header("Content-Type: application/json");

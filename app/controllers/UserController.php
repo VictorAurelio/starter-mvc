@@ -17,7 +17,7 @@ class UserController extends Controller{
         $method = $this->getMethod();
         
         if ($method !== 'POST') {
-            $this->returnJson(['message' => 'Invalid method for signing up'], 405);
+            $this->json(['message' => 'Invalid method for signing up'], 405);
         }
     
         // Read the request data
@@ -34,19 +34,19 @@ class UserController extends Controller{
             empty($password) || 
             empty($password_confirmation)) {
 
-            $this->returnJson(['message' => 'Name and email are required'], 400);
+            $this->json(['message' => 'Name and email are required'], 400);
         }
     
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->returnJson(['message' => 'Invalid email address'], 400);
+            $this->json(['message' => 'Invalid email address'], 400);
         }
     
         if ($password !== $password_confirmation) {
-            $this->returnJson(['message' => 'Passwords do not match'], 400);
+            $this->json(['message' => 'Passwords do not match'], 400);
         }
 
         if (strlen($password) < 8) {
-            $this->returnJson(['message' => 'Password must be at least 8 characters'], 400);
+            $this->json(['message' => 'Password must be at least 8 characters'], 400);
         }
     
         // Hash the password
@@ -63,12 +63,12 @@ class UserController extends Controller{
         $user = $newUser->first(['email' => $email]);
         
         if ($user) {
-            $this->returnJson(['message' => 'Email address already in use'], 400);
+            $this->json(['message' => 'Email address already in use'], 400);
         }
     
         $newUser->create($data);        
     
-        $this->returnJson(['message' => 'User created successfully'], 201);
+        $this->json(['message' => 'User created successfully'], 201);
     }
     public function signIn() {
 
