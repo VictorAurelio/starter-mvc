@@ -4,15 +4,18 @@ namespace App\Core;
 
 use App\Controllers\HomeController;
 use App\Controllers\ErrorHandlerController;
-use App\Framework\Routing\Route;
-use App\Framework\Routing\Router;
+use App\Core\Routing\Router;
 
 
-class Core {        
-    // protected $url = '/';
-    // public function __construct($url) {
-    //     $this->url = $url;
-    // }
+class Core {      
+
+    public function runMiddleware()   {
+        require_once('cors.php');
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            setCorsHeaders();
+            exit;
+        }
+    }
     public function start() {
         $errorController = new ErrorHandlerController();
         $homeController = new HomeController();
@@ -23,12 +26,9 @@ class Core {
             $url .= $_GET['url'];
         }
 
-        $route = new Route();
-        $routes = $route->getRoutes();
-        var_dump($routes);
-
-        $route = new Router($url, $routes);
-        $route->checkRoutes();
+        $router = new Router($url);
+        $router->loadRoutes('routes.php');
+        $router->checkRoutes();
 
         $parameters = [];        
 

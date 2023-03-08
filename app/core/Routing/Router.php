@@ -1,24 +1,32 @@
 <?php
-namespace App\Framework\Routing;
+
+namespace App\Core\Routing;
 
 use App\Core\Core;
-use App\Framework\Routing\Route;
-class Router {
-    protected const PARAM_PATTERN = '#{([^}]+)}/#'; // #{id}/comments/# -> /posts/123/comments/
+
+class Router extends Core {
+    protected const PARAM_PATTERN = '#{([a-zA-Z0-9_-]+)}/#'; //'#{([^}]+)}/#' -- // #{id}/comments/# -> /posts/123/comments/
     protected const OPT_PARAM_PATTERN = '([^/]*)(?:/?)'; // /posts/{id}/{slug?} -> /posts/123 and /posts/123/hello-world
     protected const REQ_PARAM_PATTERN = '([^/]+)/'; // /posts/{id}/comments/ -> /posts/123/comments/
+    protected const MAT_PARAM_PATTERN = '([\w-]+)i';
     protected $url;
     protected $routes;
-    public function __construct($url, $routes = []) {
+    
+    public function __construct($url) {
         $this->url = $url;
-        $this->routes = $routes;
+        $this->routes = [];
+    }    
+    public function loadRoutes($file) {
+        $this->routes = include($file);
     }
-    public function checkRoutes() { 
-        var_dump($this->routes);
-        echo '<br>';
+    public function checkRoutes() {
+        // var_dump($this->routes);
+        // echo '<br>';
+        // Get the HTTP method used for the current request
+        $method = $_SERVER['REQUEST_METHOD'];
         foreach($this->routes as $path => $newUrl) {
             // Identify the arguments and replace them for regex
-            $pattern = preg_replace(self::PARAM_PATTERN, '([a-z0-9-]{1,})', $path);
+            $pattern = preg_replace(self::PARAM_PATTERN, self::MAT_PARAM_PATTERN, $path);
             // match the url with the route
             if(preg_match('#^('.$pattern.')*$#i', $this->url, $matches) === 1) {
                 array_shift($matches);
@@ -41,7 +49,7 @@ class Router {
                 break;
             }
         }
-        var_dump($this->url);
+        // var_dump($this->url);
         return $this->url;
     }
 }

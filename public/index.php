@@ -2,6 +2,7 @@
 session_start();
 
 require('../App/autoloader.php');
+
 // require __DIR__ . '/../App/Core/Config.php';
 
 // require '../App/Core/Core.php';

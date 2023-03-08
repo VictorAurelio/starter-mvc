@@ -9,5 +9,5 @@ spl_autoload_register(function ($class) {
         return;
     }
     // var_dump($file);
-    define('DEBUG', true);
+    // define('DEBUG', true);
 });

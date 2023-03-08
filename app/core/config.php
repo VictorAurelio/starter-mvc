@@ -1,7 +1,6 @@
 <?php
 
 require 'environment.php';
-// $config = [];
 
 trait Config {
     public function environmentType() {
