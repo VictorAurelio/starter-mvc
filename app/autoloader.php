@@ -2,7 +2,8 @@
 require 'Core/config.php';
 
 define('ROOT', 'https://localhost/mvcscratch/App/');
-define("ENVIROMENT", "development");
+define("ENVIRONMENT", "development");
+define("JWT_SECRET_KEY", "!A@mda!@$%sMAao28man8o");
 
 spl_autoload_register(function ($class) {
     $file = str_replace('\\', '/', $class) . '.php';

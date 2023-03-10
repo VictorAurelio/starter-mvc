@@ -13,11 +13,15 @@ trait Model {
 	protected $order_column = "id";
     // protected $table = 'users';
     // protected $allowedColumns = [];
-
-	 	 /**
-	 	  * Summary of findAll
-	 	  * @return array|bool
-	 	  */
+    public function select(array $columns = ['*']): self
+    {
+        $this->select = implode(',', $columns);
+        return $this;
+    }
+    /**
+     * Summary of findAll
+    * @return array|bool
+    */
     public function findAll($limit = null)
     {
         $query = "SELECT * FROM {$this->table} ORDER BY {$this->order_column} {$this->order_type}";
@@ -32,45 +36,55 @@ trait Model {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+    public function where($data, $noData = []) {
+        $query = "SELECT * FROM {$this->table} WHERE ";
+    
+        // Add conditions for data
+        foreach ($data as $key => $value) {
+            $query .= "$key = :$key AND ";
+        }
+    
+        // Add conditions for noData
+        foreach ($noData as $key => $value) {
+            $query .= "$key != :$key AND ";
+        }
+    
+        // Remove the trailing "AND" from the query
+        $query = rtrim($query, 'AND ');
+    
+        // Add the order by clause
+        $query .= " ORDER BY {$this->order_column} {$this->order_type}";
+    
+        // Merge the data arrays
+        $data = array_merge($data, $noData);
+    
+        // Execute the query
+        $result = $this->query($query, $data);
+    
+        // Return null if there are no results
+        if (empty($result)) {
+            return null;
+        }
+    
+        return $result;
+    }
+    public function first($data, $noData = []) {
+		$query = "SELECT * FROM {$this->table} WHERE ";
 
-    public function where($data, $noData = [])
-	{
-		$keys = array_keys($data);
-		$noKeys = array_keys($noData);
-		$query = "SELECT * FROM $this->table WHERE ";
-
-		foreach ($keys as $key) {
-			$query .= $key . " = :". $key . " && ";
-		}
-
-		foreach ($noKeys as $key) {
-			$query .= $key . " != :". $key . " && ";
-		}
+        // Add conditions for data
+        foreach ($data as $key => $value) {
+            $query .= "$key = :$key AND ";
+        }
+    
+        // Add conditions for noData
+        foreach ($noData as $key => $value) {
+            $query .= "$key != :$key AND ";
+        }
 		
-		$query = trim($query," && ");
+        // Remove the trailing "AND" from the query
+        $query = rtrim($query, 'AND ');
 
-		$query .= " ORDER BY $this->order_column $this->order_type"; // Should make this optional later on
-		$data = array_merge($data, $noData);
-
-		return $this->query($query, $data);
-	}
-    public function first($data, $noData = [])
-	{
-		$keys = array_keys($data);
-		$noKeys = array_keys($noData);
-		$query = "SELECT * FROM $this->table WHERE ";
-
-		foreach ($keys as $key) {
-			$query .= $key . " = :". $key . " && ";
-		}
-
-		foreach ($noKeys as $key) {
-			$query .= $key . " != :". $key . " && ";
-		}
-		
-		$query = trim($query," && ");
-
-		$query .= ""; // left this line in case I wanna change the query later on
+		// $query .= ""; // left this line in case I wanna change the query later on
 		$data = array_merge($data, $noData);
 		
 		$result = $this->query($query, $data);
@@ -98,14 +112,13 @@ trait Model {
 		$keys = array_keys($data);
         // var_dump($keys);
         // echo '<br>';
-		$query = "INSERT INTO $this->table (".implode(",", $keys).") VALUES (:".implode(",:", $keys).")";
+		$query = "INSERT INTO {$this->table} (".implode(",", $keys).") VALUES (:".implode(",:", $keys).")";
         // var_dump($query);
         // echo '<br>';
 		$this->query($query, $data);
 		return false;
 	}
-    public function update($id, $data, $idColumn = 'id')
-	{
+    public function update($id, $data, $idColumn = 'id') {
 		// check if not allowed data was inserted
 		if(!empty($this->allowedColumns))
 		{
@@ -118,7 +131,7 @@ trait Model {
 			}
 		}
 		$keys = array_keys($data);
-		$query = "UPDATE $this->table SET ";
+		$query = "UPDATE {$this->table} SET ";
 
 		foreach ($keys as $key) {
 			$query .= $key . " = :". $key . ", ";
@@ -133,10 +146,9 @@ trait Model {
 
 		return false;
 	}
-    public function delete($id, $idColumn = 'id')
-	{
+    public function delete($id, $idColumn = 'id') {
 		$data[$idColumn] = $id;
-		$query = "DELETE FROM $this->table WHERE $idColumn = :$idColumn ";
+		$query = "DELETE FROM {$this->table} WHERE $idColumn = :$idColumn ";
 
 		$this->query($query, $data);
 

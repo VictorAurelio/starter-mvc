@@ -1,8 +1,8 @@
 <?php
 
-trait Config {
+trait config {
     public function environmentType() {
-        if(ENVIROMENT === 'development') {
+        if(ENVIRONMENT === 'development') {
             define("BASE_URL", "http://localhost/mvcscratch/public");
             define("DB_NAME", "mvc");
             define("DB_HOST", "localhost");

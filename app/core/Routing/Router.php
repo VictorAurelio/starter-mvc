@@ -5,10 +5,10 @@ namespace App\Core\Routing;
 use App\Core\Core;
 
 class Router extends Core {
-    protected const PARAM_PATTERN = '#{([a-zA-Z0-9_-]+)}/#'; //'#{([^}]+)}/#' -- // #{id}/comments/# -> /posts/123/comments/
+    protected const PARAM_PATTERN = '(\{[a-z0-9]{1,}\})'; //'#{([^}]+)}/#' -- // #{id}/comments/# -> /posts/123/comments/
     protected const OPT_PARAM_PATTERN = '([^/]*)(?:/?)'; // /posts/{id}/{slug?} -> /posts/123 and /posts/123/hello-world
-    protected const REQ_PARAM_PATTERN = '([^/]+)/'; // /posts/{id}/comments/ -> /posts/123/comments/
-    protected const MAT_PARAM_PATTERN = '([\w-]+)i';
+    protected const REQ_PARAM_PATTERN = '(\{|\})'; // /posts/{id}/comments/ -> /posts/123/comments/
+    protected const MAT_PARAM_PATTERN = '([a-z0-9-]{1,})';
     protected $url;
     protected $routes;
     
@@ -20,10 +20,6 @@ class Router extends Core {
         $this->routes = include($file);
     }
     public function checkRoutes() {
-        // var_dump($this->routes);
-        // echo '<br>';
-        // Get the HTTP method used for the current request
-        $method = $_SERVER['REQUEST_METHOD'];
         foreach($this->routes as $path => $newUrl) {
             // Identify the arguments and replace them for regex
             $pattern = preg_replace(self::PARAM_PATTERN, self::MAT_PARAM_PATTERN, $path);
@@ -32,14 +28,14 @@ class Router extends Core {
                 array_shift($matches);
                 array_shift($matches);                
                 // get the arguments to associate
-                $itens = [];
+                $items = [];
                 if(preg_match_all(self::PARAM_PATTERN, $path, $m)) {
-                    $itens = preg_replace(self::REQ_PARAM_PATTERN, '', $m[0]);
+                    $items = preg_replace(self::REQ_PARAM_PATTERN, '', $m[0]);
                 }
                 // make the association
                 $args = [];
                 foreach($matches as $key => $match) {
-                    $args[$itens[$key]] = $match;
+                    $args[$items[$key]] = $match;
                 }                
                 // set the new url
                 foreach($args as $argKey => $argValue) {

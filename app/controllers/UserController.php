@@ -9,8 +9,25 @@ class UserController extends Controller{
     public function index() {
         echo 'user';
     }
-    public function findUser() {
+    public function view($id) {
+        $array = ['error' => '', 'logged' => false];
 
+        $method = $this->getMethod();
+        $payload = $this->getRequestData();
+        $user = new User();
+
+        if(!empty($payload['jwt']) && $user->validateJwt($payload['jwt'])) {
+            $array['logged'] = true;
+            $array['self'] = false;
+            if($id == $user->getId()) {
+                $array['self'] = true;
+            }
+
+        }else {
+            $array['error'] = 'acesso negado';
+        }
+        
+        // $this->json($array);
     }
     public function signUp() {
         $newUser = new User();
@@ -34,7 +51,7 @@ class UserController extends Controller{
             empty($password) || 
             empty($password_confirmation)) {
 
-            $this->json(['message' => 'Name and email are required'], 400);
+            $this->json(['message' => 'All fields are required'], 400);
         }
     
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -59,19 +76,46 @@ class UserController extends Controller{
             'password' => $password_hash
         ];
 
-        // Check if the email already exists
-        $user = $newUser->first(['email' => $email]);
-        
-        if ($user) {
-            $this->json(['message' => 'Email address already in use'], 400);
-        }
-    
-        $newUser->create($data);        
-    
-        $this->json(['message' => 'User created successfully'], 201);
+       // Check if the email already exists
+       $user = $newUser->first(['email' => $email]);
+
+       if ($user) {
+           $this->json(['message' => 'Email address already in use'], 400);
+       }
+   
+       $newUser->create($data);    
+       
+       // Create a JWT for the newly created user
+       $userId = $newUser->checkCredentials($email, $password);
+       $jwt = $newUser->createJwt($userId);
+   
+       $this->json(['message' => 'User created successfully', 'jwt' => $jwt], 201);
     }
     public function signIn() {
+        $array = ['error' => ''];
 
+        $payload = $this->getRequestData();
+        $method = $this->getMethod();
+
+        if($method === 'POST') {
+            if(!empty($payload['email']) && !empty($payload['password'])) {
+                $user = new User();
+                if($user->checkCredentials($payload['email'], $payload['password'])) {
+                    // Generate JWT
+                    $array['jwt'] = $user->createJwt();
+
+
+                }else {
+                    $array['error'] = 'Informações inválidas.';
+                }
+            }else {
+                $array['error'] = 'Preencha todos os campos.';
+            }
+        }else {
+            $array['error'] = 'Método incompatível';
+        }
+
+        $this->json($array);
     }
 
 }

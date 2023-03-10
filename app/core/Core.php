@@ -21,7 +21,7 @@ class Core {
     public function start() {
         $errorController = new ErrorHandlerController();
         $homeController = new HomeController();
-
+        $parameters = [];  
         $url = '/';        
 
         if(isset($_GET['url'])) {
@@ -30,9 +30,7 @@ class Core {
 
         $router = new Router($url);
         $router->loadRoutes('routes.php');
-        $url = $router->checkRoutes();       
-
-        $parameters = [];        
+        $url = $router->checkRoutes();      
 
         if(!empty($url) && $url != '/') {
             $url = explode('/', $url);
