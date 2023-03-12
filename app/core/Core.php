@@ -9,8 +9,10 @@ use App\Core\Database\DataMapper\DataMapper;
 use App\Core\Routing\Router;
 
 
-class Core {
-    public function __construct() {
+class Core
+{
+    public function __construct()
+    {
         $this->configureCors();
         $config = [
             'host' => DB_HOST,
@@ -18,46 +20,50 @@ class Core {
             'username' => DB_USER,
             'password' => DB_PASS,
         ];
-        
+
         $connection = new MysqlConnection($config);
+        var_dump($connection);
         $dataMapper = new DataMapper($connection);
+        echo '<br><br>';
+        var_dump($dataMapper);
     }
-    public function configureCors()   {
+    public function configureCors()
+    {
         require_once('cors.php');
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             setCorsHeaders();
             exit;
         }
     }
-    public function start() {
+    public function start()
+    {
         $errorController = new ErrorHandlerController();
         $homeController = new HomeController();
-        $parameters = [];  
-        $url = '/';        
+        $parameters = [];
+        $url = '/';
 
-        if(isset($_GET['url'])) {
+        if (isset($_GET['url'])) {
             $url .= $_GET['url'];
         }
 
         $router = new Router($url);
         $router->loadRoutes('routes.php');
-        $url = $router->checkRoutes();      
+        $url = $router->checkRoutes();
 
-        if(!empty($url) && $url != '/') {
+        if (!empty($url) && $url != '/') {
             $url = explode('/', $url);
             array_shift($url);
-            
-            $currentController = "\\App\\Controllers\\".(ucfirst($url[0]).'Controller');
+
+            $currentController = "\\App\\Controllers\\" . (ucfirst($url[0]) . 'Controller');
             array_shift($url);
             // var_dump($currentController);
             $currentAction = (isset($url[0]) && !empty($url[0])) ? $url[0]  : 'index';
             array_shift($url);
 
-            if(count($url) > 0) {
+            if (count($url) > 0) {
                 $parameters = $url;
             }
-
-        }else {
+        } else {
             $currentController = $homeController;
             // var_dump($currentController);
             $currentAction = 'index';
@@ -78,7 +84,7 @@ class Core {
                 $parameters = [];
                 $controller = new $currentController();
                 call_user_func_array(array($controller, $currentAction), $parameters);
-            }            
+            }
         } else {
             $currentController = $errorController;
             $currentAction = 'pageNotFound';
@@ -86,6 +92,5 @@ class Core {
             $controller = new $currentController();
             call_user_func_array(array($controller, $currentAction), $parameters);
         }
-        
     }
 }

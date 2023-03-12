@@ -4,7 +4,8 @@ namespace App\Core;
 
 use Exception;
 
-class Controller {
+class Controller
+{
     // public function view($view, $data = []) {
     //     extract($data);
     //     require '../App/views/'.$view.'.view.php';
@@ -16,12 +17,14 @@ class Controller {
     //     extract($data);     
     //     require '../App/views/'.$view.'.view.php';
     // }
-    public function getMethod() {
+    public function getMethod()
+    {
         return $_SERVER['REQUEST_METHOD'];
     }
-    public function getRequestData() {
+    public function getRequestData()
+    {
         $method = $this->getMethod();
-        $data = match($method) {
+        $data = match ($method) {
             'GET' => $_GET,
             'POST' => $this->getJsonData() ?? $_POST,
             'PUT', 'DELETE' => $this->getJsonData(),
@@ -34,7 +37,8 @@ class Controller {
         return $data;
     }
 
-    private function getJsonData() {
+    private function getJsonData()
+    {
         $data = file_get_contents('php://input');
         if (!$data) {
             return null;
@@ -45,25 +49,28 @@ class Controller {
         }
         return $json;
     }
-    public function json($data, $status = 200) {
+    public function json($data, $status = 200)
+    {
         ob_clean(); // Clear the output buffer
         http_response_code($status);
         header("Content-Type: application/json");
         echo json_encode($data);
         exit;
     }
-    private function getBaseUrl() {
+    private function getBaseUrl()
+    {
         $base = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') ? 'https://' : 'http://';
         $base .= $_SERVER['SERVER_NAME'];
-        if($_SERVER['SERVER_PORT'] != '80') {
-            $base .= ':'.$_SERVER['SERVER_PORT'];
+        if ($_SERVER['SERVER_PORT'] != '80') {
+            $base .= ':' . $_SERVER['SERVER_PORT'];
         }
         $base .= '/mvcscratch/public';
-        
+
         return $base;
     }
-    protected function redirect($url) {
-        header("Location: ".$this->getBaseUrl().$url);
+    protected function redirect($url)
+    {
+        header("Location: " . $this->getBaseUrl() . $url);
         exit;
     }
 }

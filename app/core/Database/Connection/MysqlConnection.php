@@ -3,12 +3,13 @@
 namespace App\Core\Database\Connection;
 
 use App\Core\Database\QueryBuilder\MysqlQueryBuilder;
+use App\Core\Config;
 use InvalidArgumentException;
-use Pdo;
+use PDO;
 
 class MysqlConnection extends Connection
 {
-    private Pdo $pdo;
+    private PDO $pdo;
     private string $database;
     public function __construct(array $config)
     {
@@ -22,13 +23,11 @@ class MysqlConnection extends Connection
         if (empty($host) || empty($database) || empty($username)) {
             throw new InvalidArgumentException('Connection incorrectly configured');
         }
-
         $this->database = $database;
-
-        $this->pdo = new Pdo("mysql:host={$host};dbname={$database}", $username, $password);
+        $this->pdo = new PDO("mysql:host={$host};dbname={$database}", $username, $password);
     }
 
-    public function pdo(): Pdo
+    public function pdo(): PDO
     {
         return $this->pdo;
     }
@@ -37,5 +36,4 @@ class MysqlConnection extends Connection
     {
         return new MysqlQueryBuilder($this);
     }
-
 }

@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Core\Model;
 use App\Models\Jwt;
-class User {
+
+class User
+{
     use Model;
     protected $table = 'users';
     private $userId;
@@ -15,12 +17,13 @@ class User {
     ];
     // With this only I can already use it in my UserController to interact with Database
     // I can either put some validations here or in my controller - or even both
-    public function checkCredentials($email, $password) {
+    public function checkCredentials($email, $password)
+    {
         $userInfo = $this->select(['*'])->where(['email' => $email]);
 
-        if($userInfo && count($userInfo) > 0) {
-            $userInfo = $userInfo[0];            
-            if(password_verify($password, $userInfo->password)) {
+        if ($userInfo && count($userInfo) > 0) {
+            $userInfo = $userInfo[0];
+            if (password_verify($password, $userInfo->password)) {
                 $this->userId = $userInfo->id;
                 // var_dump($this->userId);               
                 return $this->userId;
@@ -33,20 +36,23 @@ class User {
             return false;
         }
     }
-    public function getId() {
+    public function getId()
+    {
         return $this->userId;
     }
-    public function validateJwt($token) {
+    public function validateJwt($token)
+    {
         $jwt = new Jwt();
         $info = $jwt->validate($token);
-        if(isset($info->userId)) {
+        if (isset($info->userId)) {
             $this->userId = $info->userId;
             return true;
-        }else {
+        } else {
             return false;
         }
     }
-    public function createJwt($userId = []) {
+    public function createJwt($userId = [])
+    {
         $jwt = new Jwt();
         $userId = $this->userId;
         return $jwt->create(['userId' => $userId]);

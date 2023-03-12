@@ -2,14 +2,15 @@
 
 namespace App\Core\Database\DataMapper;
 
-interface DataMapperInterface {
+interface DataMapperInterface
+{
     /**
      * Prepare the query string
      * 
      * @param string $sqlQuery
      * @return self
      */
-    public function prepare(string $sqlQuery) : self;
+    public function prepare(string $sqlQuery): self;
 
     /**
      * Explicit dat type for the parameter usinmg the PDO::PARAM_* constants.
@@ -28,30 +29,30 @@ interface DataMapperInterface {
      * @param bool $isSearch
      * @return mixed
      */
-    public function bindParameters(array $fields, bool $isSearch = false) : self;
+    public function bindParameters(array $fields, bool $isSearch = false): self;
 
     /**
      * returns the number of rows affected by a DELETE, INSERT, or UPDATE statement.
      * 
      * @return int|null
      */
-    public function numRows() : int;
+    public function numRows(): int;
 
-    public function execute(): bool;
+    public function execute();
 
     /**
      * Returns a single database row as an object
      * 
      * @return Object
      */
-    public function result() : Object;
+    public function result(): Object;
 
     /**
      * Returns all the rows within the database as an array
      * 
      * @return array
      */
-    public function results() : array;
+    public function results(): array;
 
     /**
      * Returns the last inserted row ID from database table
@@ -59,8 +60,5 @@ interface DataMapperInterface {
      * @return int
      * @throws Throwable
      */
-    public function getLastId() : int;
-
-
-
+    public function getLastId(): int;
 }
