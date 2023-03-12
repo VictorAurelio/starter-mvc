@@ -2,14 +2,25 @@
 
 namespace App\Core;
 
+use App\Core\Database\Connection\MysqlConnection;
 use App\Controllers\HomeController;
 use App\Controllers\ErrorHandlerController;
+use App\Core\Database\DataMapper\DataMapper;
 use App\Core\Routing\Router;
 
 
 class Core {
     public function __construct() {
         $this->configureCors();
+        $config = [
+            'host' => DB_HOST,
+            'database' => DB_NAME,
+            'username' => DB_USER,
+            'password' => DB_PASS,
+        ];
+        
+        $connection = new MysqlConnection($config);
+        $dataMapper = new DataMapper($connection);
     }
     public function configureCors()   {
         require_once('cors.php');

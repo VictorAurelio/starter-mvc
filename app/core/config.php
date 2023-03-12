@@ -1,6 +1,6 @@
 <?php
-
-trait config {
+namespace App\Core;
+class config {
     public function environmentType() {
         if(ENVIRONMENT === 'development') {
             define("BASE_URL", "http://localhost/mvcscratch/public");

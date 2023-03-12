@@ -8,7 +8,6 @@ use App\Core\Database\QueryBuilder\Exception\QueryBuilderException;
  * Summary of Factory
  */
 class Factory {
-
     /**
      * Summary of __construct
      * @return void
@@ -21,6 +20,6 @@ class Factory {
         if(!$queryBuilderString instanceof QueryBuilderInterface) {
             // throw new QueryBuilderException($queryBuilderString . 'is not a valid Query builder object.');
         }
-        return new QueryBuilder();
+        return $queryBuilderObject;
     }
 }

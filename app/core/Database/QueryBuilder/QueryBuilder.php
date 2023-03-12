@@ -3,7 +3,7 @@
 namespace App\Core\Database\QueryBuilder;
 
 use App\Core\Database\QueryBuilder\Exception\QueryBuilderInvalidArgumentException;
-class QueryBuilder implements QueryBuilderInterface {
+abstract class QueryBuilder implements QueryBuilderInterface {
    
     protected array $key;
     protected string $sqlQuery = '';
@@ -118,6 +118,10 @@ class QueryBuilder implements QueryBuilderInterface {
         }
         return false;
     }
+    public function searchQuery() : string
+    {
+        return '';
+    }
     private function hasConditions()
     {
         if(isset($this->key['conditions']) && $this->key['conditions'] != '') {
@@ -143,5 +147,12 @@ class QueryBuilder implements QueryBuilderInterface {
             $this->sqlQuery .= " LIMIT :offset, :limit";
         }
         return $this->sqlQuery;
+    }
+    public function rawQuery(): string
+    {
+        $string = '';
+        
+
+        return $string;
     }
 }

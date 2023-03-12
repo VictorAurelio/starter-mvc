@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Core\Database\QueryBuilder\Exception;
-use PDOException;
 
-class QueryBuilderInvalidArgumentException extends PDOException{
-    
+use Exception;
+
+class QueryBuilderInvalidArgumentException extends Exception{    
 }
