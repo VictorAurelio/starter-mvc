@@ -82,13 +82,13 @@ class UserController extends BaseController
         ];
 
         // Check if the email already exists
-        $user = $newUser->first(['email' => $email]);
+        // $user = $newUser->first(['email' => $email]);
 
-        if ($user) {
-            $this->json(['message' => 'Email address already in use'], 400);
-        }
+        // if ($user) {
+        //     $this->json(['message' => 'Email address already in use'], 400);
+        // }
 
-        $newUser->create($data);
+        // $newUser->create($data);
 
         // Create a JWT for the newly created user
         $userId = $newUser->checkCredentials($email, $password);

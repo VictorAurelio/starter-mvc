@@ -28,12 +28,12 @@ class BaseDAOFactory
         $this->dataMapper = $dataMapper;
     }
 
-    public function create(string $crudString, string $tableSchema, string $tableSchemaId, array $options = []): HelperDAOInterface
+    public function create(string $daoString, string $tableSchema, string $tableSchemaId, array $options = []): HelperDAOInterface
     {
-        $crudObject = new $crudString($this->dataMapper, $this->queryBuilder, $tableSchema, $tableSchemaId);
-        if(!$crudObject instanceof BaseDAOInterface) {
-            throw new DAOException($crudString . ' is not a valid crud object.');
+        $daoObject = new $daoString($this->dataMapper, $this->queryBuilder, $tableSchema, $tableSchemaId);
+        if(!$daoObject instanceof BaseDAOInterface) {
+            throw new DAOException($daoString . ' is not a valid dao object.');
         }
-        return new HelperDAO($crudObject);
+        return new HelperDAO($daoObject);
     }
 }

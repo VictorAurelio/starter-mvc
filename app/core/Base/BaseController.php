@@ -17,6 +17,7 @@ class BaseController
     //     extract($data);     
     //     require '../App/views/'.$view.'.view.php';
     // }
+    
     public function getMethod()
     {
         return $_SERVER['REQUEST_METHOD'];

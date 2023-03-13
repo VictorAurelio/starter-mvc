@@ -7,7 +7,6 @@ use App\Models\Jwt;
 
 class User
 {
-    use Model;
     protected $table = 'users';
     private $userId;
     protected $allowedColumns = [

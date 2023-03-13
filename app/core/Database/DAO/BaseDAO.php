@@ -105,7 +105,8 @@ class BaseDAO implements BaseDAOInterface
         try {
             $args = ['table' => $this->getSchema(), 'type' => 'select', 'selectors' => $selectors, 'conditions' => $conditions, 'params' => $parameters, 'extras' => $optional];
             $query = $this->queryBuilder->buildQuery($args)->selectQuery();
-            $this->dataMapper->persist($query, array_merge($conditions, $parameters));
+            $merged = array_merge($conditions, $parameters);
+            $this->dataMapper->persist($query, $merged);
             if ($this->dataMapper->numRows() > 0) {
                 return $this->dataMapper->results();
             }

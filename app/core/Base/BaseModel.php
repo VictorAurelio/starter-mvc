@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Base;
+namespace App\Core\Base;
 
 use App\Core\Base\Exceptions\BaseInvalidArgumentException;
 use App\Core\Database\DataRepository\DataRepository;
 use App\Core\Database\DataRepository\DataRepositoryFactory;
 
-class Model
+class BaseModel
 {
     private string $tableSchema;
     private string $tableSchemaId;
