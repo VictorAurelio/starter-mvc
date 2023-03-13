@@ -7,22 +7,30 @@ use App\Core\Database\DataMapper\DataMapper;
 use App\Controllers\ErrorHandlerController;
 use App\Controllers\HomeController;
 use App\Core\Routing\Router;
+use App\Core\Config;
 
 
 class Core
 {
-    public function __construct()
+    private Config $config;
+    private Router $router;
+    public function __construct(Config $config, Router $router)
     {
+        $this->router = $router;
+        $this->config = $config;
+
+        $this->config->constants();
+        $this->config->environmentType();
         $this->configureCors();
 
-        $config = [
+        $dbConfig = [
             'host' => DB_HOST,
             'database' => DB_NAME,
             'username' => DB_USER,
             'password' => DB_PASS,
         ];
 
-        $connection = new MysqlConnection($config);
+        $connection = new MysqlConnection($dbConfig);
         $dataMapper = new DataMapper($connection);
     }
     public function configureCors()
@@ -33,8 +41,10 @@ class Core
             exit;
         }
     }
+
     public function start()
     {
+        // var_dump($this->config);
         $errorController = new ErrorHandlerController();
         $homeController = new HomeController();
         $parameters = [];
@@ -43,11 +53,10 @@ class Core
         if (isset($_GET['url'])) {
             $url .= $_GET['url'];
         }
-
-        $router = new Router($url);
         
-        $router->loadRoutes('routes.php');
-        $url = $router->checkRoutes();
+        $this->router->loadRoutes('routes.php');
+        $url = $this->router->checkRoutes($url);
+        var_dump($url);
 
         if (!empty($url) && $url != '/') {
             $url = explode('/', $url);

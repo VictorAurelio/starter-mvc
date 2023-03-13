@@ -13,22 +13,21 @@ class Router extends Core
     protected $url;
     protected $routes;
 
-    public function __construct($url)
+    public function __construct()
     {
-        $this->url = $url;
         $this->routes = [];
     }
     public function loadRoutes($file)
     {
         $this->routes = include($file);
     }
-    public function checkRoutes()
+    public function checkRoutes($url)
     {
         foreach ($this->routes as $path => $newUrl) {
             // Identify the arguments and replace them for regex
             $pattern = preg_replace(self::PARAM_PATTERN, self::MAT_PARAM_PATTERN, $path);
             // match the url with the route
-            if (preg_match('#^(' . $pattern . ')*$#i', $this->url, $matches) === 1) {
+            if (preg_match('#^(' . $pattern . ')*$#i', $url, $matches) === 1) {
                 array_shift($matches);
                 array_shift($matches);
                 // get the arguments to associate
@@ -45,11 +44,11 @@ class Router extends Core
                 foreach ($args as $argKey => $argValue) {
                     $newUrl = str_replace(':' . $argKey, $argValue, $newUrl);
                 }
-                $this->url = $newUrl;
+                $url = $newUrl;
                 break;
             }
         }
-        // var_dump($this->url);
-        return $this->url;
+        // var_dump($url);
+        return $url;
     }
 }

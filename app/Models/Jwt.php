@@ -6,7 +6,6 @@ use App\Core\Model;
 
 class Jwt
 {
-    use Model;
 
     public function create($data)
     {

@@ -2,14 +2,18 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
-class ErrorHandlerController extends Controller {
+use App\Core\Base\BaseController;
 
-    public function pageNotFound() {
+class ErrorHandlerController extends BaseController
+{
+
+    public function pageNotFound()
+    {
         // $this->render('error-pages/404');
     }
 
-    public function invalidParameters() {
+    public function invalidParameters()
+    {
         echo 'INVALID PARAMETERS';
     }
 }

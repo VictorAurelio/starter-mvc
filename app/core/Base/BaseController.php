@@ -4,7 +4,7 @@ namespace App\Core\Base;
 
 use App\Core\Base\Exceptions\BaseInvalidRequestException;
 
-class Controller
+class BaseController
 {
     // public function view($view, $data = []) {
     //     extract($data);
