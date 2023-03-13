@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core;
+namespace App\Core\Base;
 
-use Exception;
+use App\Core\Base\Exceptions\BaseInvalidRequestException;
 
 class Controller
 {
@@ -31,7 +31,7 @@ class Controller
             default => null,
         };
         if (!is_array($data)) {
-            throw new Exception('Invalid request data');
+            throw new BaseInvalidRequestException('Invalid request data');
         }
         // header('Content-Type: application/json');
         return $data;
