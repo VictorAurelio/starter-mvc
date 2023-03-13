@@ -3,9 +3,9 @@
 namespace App\Core;
 
 use App\Core\Database\Connection\MysqlConnection;
-use App\Controllers\HomeController;
-use App\Controllers\ErrorHandlerController;
 use App\Core\Database\DataMapper\DataMapper;
+use App\Controllers\ErrorHandlerController;
+use App\Controllers\HomeController;
 use App\Core\Routing\Router;
 
 
@@ -14,6 +14,7 @@ class Core
     public function __construct()
     {
         $this->configureCors();
+
         $config = [
             'host' => DB_HOST,
             'database' => DB_NAME,
@@ -22,10 +23,7 @@ class Core
         ];
 
         $connection = new MysqlConnection($config);
-        var_dump($connection);
         $dataMapper = new DataMapper($connection);
-        echo '<br><br>';
-        var_dump($dataMapper);
     }
     public function configureCors()
     {
@@ -47,6 +45,7 @@ class Core
         }
 
         $router = new Router($url);
+        
         $router->loadRoutes('routes.php');
         $url = $router->checkRoutes();
 

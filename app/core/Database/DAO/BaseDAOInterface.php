@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Core\Database\Entity;
+namespace App\Core\Database\DAO;
 
-interface CrudInterface
+interface BaseDAOInterface
 {
     public function getSchema(): string;
 

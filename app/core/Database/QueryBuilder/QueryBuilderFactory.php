@@ -2,13 +2,13 @@
 
 namespace App\Core\Database\QueryBuilder;
 
-use App\Core\Database\QueryBuilder\QueryBuilderInterface;
 use App\Core\Database\QueryBuilder\Exception\QueryBuilderException;
+use App\Core\Database\QueryBuilder\QueryBuilderInterface;
 
 /**
  * Summary of Factory
  */
-class Factory
+class QueryBuilderFactory
 {
     /**
      * Summary of __construct

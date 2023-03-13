@@ -4,7 +4,6 @@ namespace App\Core\Database\QueryBuilder;
 
 interface QueryBuilderInterface
 {
-
     public function insertQuery(): string;
     public function selectQuery(): string;
     public function updateQuery(): string;

@@ -1,25 +1,25 @@
 <?php
 
 
-namespace App\Core\Database\Entity;
+namespace App\Core\Database\DAO;
 
-use App\Core\Database\DataMapper\DataMapper;
 use App\Core\Database\QueryBuilder\QueryBuilder;
+use App\Core\Database\DataMapper\DataMapper;
 use Throwable;
 
-class Crud implements CrudInterface
+class BaseDAO implements BaseDAOInterface
 {
-    /** @var DataMapper */
-    protected DataMapper $dataMapper;
-
     /** @var QueryBuilder */
     protected QueryBuilder $queryBuilder;
 
-    /** @var string */
-    protected string $tableSchema;
+    /** @var DataMapper */
+    protected DataMapper $dataMapper;
 
     /** @var string */
     protected string $tableSchemaID;
+
+    /** @var string */
+    protected string $tableSchema;
 
     /** @var array */
     protected array $options;
@@ -27,17 +27,17 @@ class Crud implements CrudInterface
     /**
      * Main constructor
      *
-     * @param DataMapper $dataMapper
      * @param QueryBuilder $queryBuilder
-     * @param string $tableSchema
+     * @param DataMapper $dataMapper
      * @param string $tableSchemaID
+     * @param string $tableSchema
      */
     public function __construct(DataMapper $dataMapper, QueryBuilder $queryBuilder, string $tableSchema, string $tableSchemaID, ?array $options = [])
     {
-        $this->dataMapper = $dataMapper;
+        $this->tableSchemaID = $tableSchemaID;
         $this->queryBuilder = $queryBuilder;
         $this->tableSchema = $tableSchema;
-        $this->tableSchemaID = $tableSchemaID;
+        $this->dataMapper = $dataMapper;
         $this->options = $options;
     }
 
@@ -94,9 +94,9 @@ class Crud implements CrudInterface
     /**
      * @inheritdoc
      *
-     * @param array $selectors
      * @param array $conditions
      * @param array $parameters
+     * @param array $selectors
      * @param array $optional
      * @return array
      */
@@ -117,8 +117,8 @@ class Crud implements CrudInterface
     /**
      * @inheritdoc
      *
-     * @param array $fields
      * @param string $primaryKey
+     * @param array $fields
      * @return boolean
      */
     public function update(array $fields = [], string $primaryKey): bool
@@ -158,8 +158,8 @@ class Crud implements CrudInterface
     /**
      * @inheritdoc
      *
-     * @param array $selectors
      * @param array $conditions
+     * @param array $selectors
      * @return array
      */
     public function search(array $selectors = [], array $conditions = []): array
@@ -179,8 +179,8 @@ class Crud implements CrudInterface
     /**
      * @inheritdoc
      *
-     * @param string $rawQuery
      * @param array|null $conditions
+     * @param string $rawQuery
      * @return void
      */
     public function rawQuery(string $rawQuery, ?array $conditions = [])

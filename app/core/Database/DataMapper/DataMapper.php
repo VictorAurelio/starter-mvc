@@ -2,11 +2,11 @@
 
 namespace App\Core\Database\DataMapper;
 
-use App\Core\Database\Connection\Connection;
 use App\Core\Database\DataMapper\Exception\DataMapperException;
-use PDO;
+use App\Core\Database\Connection\Connection;
 use PDOStatement;
 use Throwable;
+use PDO;
 
 /**
  * Summary of DataMapper
@@ -25,9 +25,9 @@ class DataMapper implements DataMapperInterface
     }
     /**
      * Summary of isEmpty
-     * @param mixed $value
      * @param string|null $errorMessage
      * @throws DataMapperException
+     * @param mixed $value
      * @return void
      */
     private function isEmpty($value, string $errorMessage = null)
@@ -38,8 +38,8 @@ class DataMapper implements DataMapperInterface
     }
     /**
      * Summary of isArray
-     * @param array $value
      * @throws DataMapperException
+     * @param array $value
      * @return void
      */
     private function isArray(array $value)
