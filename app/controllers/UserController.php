@@ -2,14 +2,35 @@
 
 namespace App\Controllers;
 
+use App\Core\Database\QueryBuilder\MysqlQueryBuilder;
+use App\Core\Database\Connection\ConnectionInterface;
+use App\Core\Database\DataMapper\DataMapper;
+use App\Core\Database\DatabaseHandler;
 use App\Core\Base\BaseController;
-use App\Models\User;
+use App\Core\Database\DAO\DAO;
+use App\Models\UserModel;
 
 class UserController extends BaseController
 {
+    
+    protected UserModel $userModel;
+    protected ConnectionInterface $connection;
+    protected DAO $dao;
+    public function __construct()
+    {
+        $this->connection = DatabaseHandler::createConnection();
+        $this->userModel = new UserModel($this->connection);
+        $this->dao = new DAO(
+            new DataMapper($this->connection),
+            new MysqlQueryBuilder($this->connection),
+            $this->userModel->getTableSchema(),
+            $this->userModel->getTableSchemaId()
+        );
+    }
     public function index()
     {
-        echo 'user';
+        $users = $this->dao->read(['name', 'email']);
+        var_dump($users);
     }
     public function view($id)
     {
@@ -17,7 +38,6 @@ class UserController extends BaseController
 
         $method = $this->getMethod();
         $payload = $this->getRequestData();
-        $user = new User();
 
         if (!empty($payload['jwt']) && $user->validateJwt($payload['jwt'])) {
             $array['logged'] = true;
@@ -33,9 +53,7 @@ class UserController extends BaseController
     }
     public function signUp()
     {
-        $newUser = new User();
         $method = $this->getMethod();
-
         if ($method !== 'POST') {
             $this->json(['message' => 'Invalid method for signing up'], 405);
         }
@@ -49,28 +67,33 @@ class UserController extends BaseController
         $password = $payload['password'] ?? null;
         $password_confirmation = $payload['password_confirmation'] ?? null;
 
-        if (
-            empty($name) ||
-            empty($email) ||
-            empty($password) ||
-            empty($password_confirmation)
-        ) {
+        $errors = [];
 
-            $this->json(['message' => 'All fields are required'], 400);
+        empty($name) && $errors[] = 'Name is required';
+        empty($email) && $errors[] = 'Email is required';
+        empty($password) && $errors[] = 'Password is required';
+        empty($password_confirmation) && $errors[] = 'Password confirmation is required';
+        
+        !filter_var($email, FILTER_VALIDATE_EMAIL) && $errors[] = 'Invalid email address';
+        
+        $password !== $password_confirmation && $errors[] = 'Passwords do not match';
+        strlen($password) < 8 && $errors[] = 'Password must be at least 8 characters';
+        
+        if (!empty($errors)) {
+            $this->json(['message' => $errors], 400);
         }
+        
+       // Verify if email already exists in database
+       $userWithEmail = $this->dao->search(['email'], ['email' => $email]);
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->json(['message' => 'Invalid email address'], 400);
-        }
-
-        if ($password !== $password_confirmation) {
-            $this->json(['message' => 'Passwords do not match'], 400);
-        }
-
-        if (strlen($password) < 8) {
-            $this->json(['message' => 'Password must be at least 8 characters'], 400);
-        }
-
+       $error = match (true) {
+           !empty($userWithEmail) => 'Email address already in use',
+           default => null
+       };
+       
+       if ($error) {
+           $this->json(['message' => $error], 400);
+       }
         // Hash the password
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
@@ -78,23 +101,23 @@ class UserController extends BaseController
         $data = [
             'name' => $name,
             'email' => $email,
-            'password' => $password_hash
-        ];
-
-        // Check if the email already exists
-        // $user = $newUser->first(['email' => $email]);
-
-        // if ($user) {
-        //     $this->json(['message' => 'Email address already in use'], 400);
-        // }
-
-        // $newUser->create($data);
-
-        // Create a JWT for the newly created user
-        $userId = $newUser->checkCredentials($email, $password);
-        $jwt = $newUser->createJwt($userId);
-
-        $this->json(['message' => 'User created successfully', 'jwt' => $jwt], 201);
+            'password' => ($password_hash) ? $password_hash : null
+        ];                
+        if (!$data['password']) {
+            $this->json(['message' => 'Error hashing password'], 500);
+        } else {
+            $newUser = $this->dao->create($data);
+            if ($newUser) {
+                $user = $this->userModel->checkCredentials($email, $password);
+                if ($user) {
+                    $userId = $user['id'];
+                    $jwt = $this->userModel->createJwt($userId);
+                    $this->json(['message' => 'User created successfully', 'jwt' => $jwt], 201);
+                }
+            } else {
+                $this->json(['message' => 'Error creating user'], 500);
+            }
+        }
     }
     public function signIn()
     {

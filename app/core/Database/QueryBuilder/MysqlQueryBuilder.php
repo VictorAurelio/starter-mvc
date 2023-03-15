@@ -12,9 +12,5 @@ class MysqlQueryBuilder extends QueryBuilder
     {
         $this->connection = $connection;
     }
-    public function whereId(int $id): self
-    {
-        $this->key['conditions']['id'] = $id;
-        return $this;
-    }
+
 }

@@ -2,7 +2,7 @@
 
 namespace App\Core\Database\DAO;
 
-interface BaseDAOInterface
+interface DAOInterface
 {
     public function getSchema(): string;
 

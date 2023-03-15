@@ -4,9 +4,11 @@ namespace App\Core\Database\DataMapper;
 
 use App\Core\Database\DataMapper\Exception\DataMapperException;
 use App\Core\Database\Connection\Connection;
+use InvalidArgumentException;
 use PDOStatement;
 use Throwable;
 use PDO;
+use PDOException;
 
 /**
  * Summary of DataMapper
@@ -83,43 +85,51 @@ class DataMapper implements DataMapperInterface
             throw $exception;
         }
     }
-    /**
-     * Summary of bindParameters
+   /**
+     * @inheritDoc
+     *
      * @param array $fields
-     * @param bool $isSearch
-     * @return DataMapper
+     * @param boolean $isSearch
+     * @return self
      */
     public function bindParameters(array $fields, bool $isSearch = false): self
     {
+        $this->isArray($fields);
         if (is_array($fields)) {
             $type = ($isSearch === false) ? $this->bindValues($fields) : $this->bindSearchValues($fields);
             if ($type) {
                 return $this;
             }
         }
-        return false;
     }
     /**
-     * Summary of bindValues
+     * Binds a value to a corresponding name or question mark placeholder in the SQL
+     * statement that was used to prepare the statement
+     * 
      * @param array $fields
      * @return PDOStatement
+     * @throws BaseInvalidArgumentException
      */
     protected function bindValues(array $fields): PDOStatement
     {
-        $this->isArray($fields);
+        $this->isArray($fields); // don't need
         foreach ($fields as $key => $value) {
             $this->statement->bindValue(':' . $key, $value, $this->bind($value));
         }
         return $this->statement;
     }
     /**
-     * Summary of bindSearchValues
+     * Binds a value to a corresponding name or question mark placeholder
+     * in the SQL statement that was used to prepare the statement. Similar to
+     * above but optimised for search queries
+     * 
      * @param array $fields
-     * @return PDOStatement
+     * @return mixed
+     * @throws BaseInvalidArgumentException
      */
     protected function bindSearchValues(array $fields): PDOStatement
     {
-        $this->isArray($fields);
+        $this->isArray($fields); // don't need
         foreach ($fields as $key => $value) {
             $this->statement->bindValue(':' . $key,  '%' . $value . '%', $this->bind($value));
         }
@@ -136,7 +146,7 @@ class DataMapper implements DataMapperInterface
     }
     /**
      * Summary of numRows
-     * @return int
+     * @return integer
      */
     public function numRows(): int
     {
@@ -153,8 +163,9 @@ class DataMapper implements DataMapperInterface
             return $this->statement->fetch(PDO::FETCH_OBJ);
     }
 
-    /**
+   /**
      * @inheritDoc
+     * @return array
      */
     public function results(): array
     {
@@ -181,7 +192,8 @@ class DataMapper implements DataMapperInterface
     }
 
     /**
-     * Summary of buildQueryParameters
+     * Returns the query condition merged with the query parameters
+     * 
      * @param array $conditions
      * @param array $parameters
      * @return array
@@ -192,17 +204,24 @@ class DataMapper implements DataMapperInterface
     }
 
     /**
-     * Summary of persist
+     * Persist queries to database
+     *
      * @param string $sqlQuery
      * @param array $parameters
-     * @return mixed
+     * @param bool $search defaults to false
+     * @return void
+     * @throws DataLayerException
      */
-    public function persist(string $sqlQuery, array $parameters)
+    public function persist(string $sqlQuery, array $parameters, bool $search = false): void
     {
+       // $this->start();
         try {
-            return $this->prepare($sqlQuery)->bindParameters($this->buildQueryParameters($parameters))->execute();
-        } catch (Throwable $throwable) {
-            throw $throwable;
+            $this->prepare($sqlQuery)->bindParameters($parameters, $search)->execute();
+           //$this->commit();
+        } catch (PDOException $e) {
+           // $this->revert();
+           throw new PDOException('Data persistent error ' . $e->getMessage());
         }
+
     }
 }

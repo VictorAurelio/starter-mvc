@@ -5,9 +5,10 @@ namespace App\Core\Database\DAO;
 
 use App\Core\Database\QueryBuilder\QueryBuilder;
 use App\Core\Database\DataMapper\DataMapper;
+use Exception;
 use Throwable;
 
-class BaseDAO implements BaseDAOInterface
+class DAO
 {
     /** @var QueryBuilder */
     protected QueryBuilder $queryBuilder;
@@ -82,7 +83,7 @@ class BaseDAO implements BaseDAOInterface
         try {
             $args = ['table' => $this->getSchema(), 'type' => 'insert', 'fields' => $fields];
             $query = $this->queryBuilder->buildQuery($args)->insertQuery();
-            $this->dataMapper->persist($query, $fields);
+            $this->dataMapper->persist($query, $this->dataMapper->buildQueryParameters($fields));
             if ($this->dataMapper->numRows() == 1) {
                 return true;
             }
@@ -90,6 +91,7 @@ class BaseDAO implements BaseDAOInterface
             throw $throwable;
         }
     }
+
 
     /**
      * @inheritdoc
@@ -105,8 +107,7 @@ class BaseDAO implements BaseDAOInterface
         try {
             $args = ['table' => $this->getSchema(), 'type' => 'select', 'selectors' => $selectors, 'conditions' => $conditions, 'params' => $parameters, 'extras' => $optional];
             $query = $this->queryBuilder->buildQuery($args)->selectQuery();
-            $merged = array_merge($conditions, $parameters);
-            $this->dataMapper->persist($query, $merged);
+            $this->dataMapper->persist($query, $this->dataMapper->buildQueryParameters($conditions, $parameters));
             if ($this->dataMapper->numRows() > 0) {
                 return $this->dataMapper->results();
             }
@@ -127,7 +128,7 @@ class BaseDAO implements BaseDAOInterface
         try {
             $args = ['table' => $this->getSchema(), 'type' => 'update', 'fields' => $fields, 'primary_key' => $primaryKey];
             $query = $this->queryBuilder->buildQuery($args)->updateQuery();
-            $this->dataMapper->persist($query, $fields);
+            $this->dataMapper->persist($query, $this->dataMapper->buildQueryParameters($fields));
             if ($this->dataMapper->numRows() === 1) {
                 return true;
             }
@@ -147,7 +148,7 @@ class BaseDAO implements BaseDAOInterface
         try {
             $args = ['table' => $this->getSchema(), 'type' => 'delete', 'conditions' => $conditions];
             $query = $this->queryBuilder->buildQuery($args)->deleteQuery();
-            $this->dataMapper->persist($query, $conditions);
+            $this->dataMapper->persist($query, $this->dataMapper->buildQueryParameters($conditions));
             if ($this->dataMapper->numRows() === 1) {
                 return true;
             }
@@ -156,27 +157,21 @@ class BaseDAO implements BaseDAOInterface
         }
     }
 
-    /**
+   /**
      * @inheritdoc
      *
-     * @param array $conditions
      * @param array $selectors
+     * @param array $conditions
      * @return array
+     * @throws DataLayerException
      */
     public function search(array $selectors = [], array $conditions = []): array
     {
-        try {
-            $args = ['table' => $this->getSchema(), 'type' => 'search', 'selectors' => $selectors, 'conditions' => $conditions];
-            $query = $this->queryBuilder->buildQuery($args)->searchQuery();
-            $this->dataMapper->persist($query, $conditions);
-            if ($this->dataMapper->numRows() > 0) {
-                return $this->dataMapper->results();
-            }
-        } catch (Throwable $throwable) {
-            throw $throwable;
-        }
+        $args = ['table' => $this->getSchema(), 'type' => 'search', 'selectors' => $selectors, 'conditions' => $conditions];
+        $query = $this->queryBuilder->buildQuery($args)->searchQuery();
+        $this->dataMapper->persist($query, $this->dataMapper->buildQueryParameters($conditions), true);
+        return ($this->dataMapper->numRows() >= 1) ? $this->dataMapper->results() : array();
     }
-
     /**
      * @inheritdoc
      *
@@ -189,11 +184,27 @@ class BaseDAO implements BaseDAOInterface
         try {
             $args = ['table' => $this->getSchema(), 'type' => 'raw', 'raw' => $rawQuery, 'conditions' => $conditions];
             $query = $this->queryBuilder->buildQuery($args)->rawQuery();
-            $this->dataMapper->persist($query, $conditions);
+            $this->dataMapper->persist($query, $this->dataMapper->buildQueryParameters($conditions));
             if ($this->dataMapper->numRows()) {
             }
         } catch (Throwable $throwable) {
             throw $throwable;
         }
+    }
+    
+
+    /**
+     * @param string $type
+     * @return mixed
+     */
+    public function getQueryType(string $type)
+    {
+        $queryTypes = ['createQuery', 'readQuery', 'updateQuery', 'deleteQuery', 'joinQuery', 'searchQuery', 'rawQuery'];
+        if (!empty($type)) {
+            if (in_array($type, $queryTypes, true)) {
+                return $this->$type;
+            }
+        }
+
     }
 }

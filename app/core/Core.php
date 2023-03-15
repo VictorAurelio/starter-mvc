@@ -22,16 +22,6 @@ class Core
         $this->config = $config;
         $this->config->constants();
         $this->config->environmentType();
-
-        $dbConfig = [
-            'host' => DB_HOST,
-            'database' => DB_NAME,
-            'username' => DB_USER,
-            'password' => DB_PASS,
-        ];        
-        $connection = new MysqlConnection($dbConfig);
-
-        (new DataMapper($connection));
     }
 
     public function start()
