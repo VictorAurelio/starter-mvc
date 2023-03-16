@@ -21,15 +21,24 @@ class UserModel extends BaseModel
     }
 
     public function checkCredentials($email, $password)
-    {   
-        $user = $this->dao->search(['email'], ['email' => $email], true);
-        if (count($user) > 0 && $user[0]['email'] === $email) {
-            if (password_verify($password, $user[0]['password'])) {
-                $this->userId = $user[0]['id'];
-                return $user[0];
-            }
+    {
+        $user = $this->dao->findByExact(['email' => $email]);
+        
+        if ($user !== null && password_verify($password, $user->password)) {
+            $this->userId = $user->id;
+            return $user;
         }
-        return json_encode(['error' => 'Invalid email or password']);
+        return false;
+    }
+    public function getUserIdFromJwt($token)
+    {
+        $jwt = new Jwt();
+        $info = $jwt->validate($token);
+        if (isset($info->userId)) {
+            return $info->userId;
+        } else {
+            return false;
+        }
     }
     public function getTableSchema()
     {
@@ -43,17 +52,19 @@ class UserModel extends BaseModel
     {
         $jwt = new Jwt();
         $info = $jwt->validate($token);
-        if (isset($info->userId)) {
+        // var_dump($info);
+        if (isset($info->userId) && isset($info->exp) && time() < $info->exp) {
             $this->userId = $info->userId;
             return true;
         } else {
             return false;
         }
     }
-    public function createJwt($userId = [])
+    public function createJwt($userId)
     {
         $jwt = new Jwt();
-        $userId = $this->userId;
-        return $jwt->create(['userId' => $userId]);
+        $expTime = time() + JWT_EXPIRATION_TIME;
+        $token = $jwt->create(['userId' => $userId, 'exp' => $expTime]);
+        return $token;
     }
 }

@@ -10,6 +10,7 @@ class Config
         define("ENVIRONMENT", "development");
         define("JWT_SECRET_KEY", "!A@mda!@$%sMAao28man8o");
         define("DEFAULT_ACTION", "index");
+        define("JWT_EXPIRATION_TIME", 604800); // one week expiration time
     }
     public function environmentType()
     {

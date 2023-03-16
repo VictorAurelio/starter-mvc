@@ -15,6 +15,7 @@ use App\Core\Validation\Rule\MinRule;
 use App\Core\Validation\Validator;
 use App\Core\Base\BaseController;
 use App\Core\Database\DAO\DAO;
+use App\Http\Controllers\LogoutUserController;
 use App\Models\UserModel;
 
 
@@ -49,27 +50,25 @@ class UserController extends BaseController
         // $users = $this->dao->read(['name', 'email']);
         // var_dump($users);
     }
-    // public function view($id)
-    // {
-    //     $array = ['error' => '', 'logged' => false];
-
-    //     $method = $this->getMethod();
-    //     $payload = $this->getRequestData();
-
-    //     if (!empty($payload['jwt']) && $user->validateJwt($payload['jwt'])) {
-    //         $array['logged'] = true;
-    //         $array['self'] = false;
-    //         if ($id == $user->getId()) {
-    //             $array['self'] = true;
-    //         }
-    //     } else {
-    //         $array['error'] = 'acesso negado';
-    //     }
-
-    //     // $this->json($array);
-    // }
-    public function search()
+    public function view($id)
     {
+        $array = ['error' => '', 'logged' => false];
+
+        $method = $this->getMethod();
+        $payload = $this->getRequestData();
+        var_dump($payload);
+        if (!empty($payload['jwt']) && $this->userModel->validateJwt($payload['jwt'])) {
+            $array['logged'] = true;
+            echo 'logado';
+            $array['self'] = false;
+            if ($id == $this->userModel->getUserIdFromJwt($payload['jwt'])) {
+                $array['self'] = true;
+            }
+        } else {
+            $array['error'] = 'acesso negado';
+        }
+
+        // $this->json($array);
     }
     public function signUp()
     {
@@ -91,18 +90,36 @@ class UserController extends BaseController
         }
     }
 
-    // public function signIn()
-    // {
-    //     $payload = $this->getRequestData();
-    //     var_dump($payload);
+    public function signIn()
+    {
+        if ($this->getMethod() !== 'POST') {
+            $this->json(['message' => 'Invalid method for signing in'], 405);
+        }
 
-    //     $array = match (true) {
-    //         ($this->getMethod() !== 'POST') => ['error' => 'Método incompatível'],
-    //         (empty($payload['email']) || empty($payload['password'])) => ['error' => 'Preencha todos os campos.'],
-    //         ($this->userModel->checkCredentials($payload['email'], $payload['password'])) => ['jwt' => $this->userModel->createJwt()],
-    //         default => ['error' => 'Informações inválidas.']
-    //     };
+        // Read the request data
+        $payload = $this->getRequestData();
+        $data = $this->sanitizer->clean($payload);
 
-    //     // $this->json($array);
-    // }
+        $loginUserController = new LoginUserController($this);
+
+        try {
+            $result = $loginUserController->login($data);
+            $this->json([
+                'message' => $result['message'],
+                'jwt' => $result['jwt'],
+                'userId' => $result['userId'],
+            ], $result['status']);
+        } catch (ValidationException $e) {
+            $this->json($e->getErrors(), 400);
+        }
+    }
+
+    public function logoutValidate($token)
+    {
+        (new LogoutUserController($this))->logout($token);
+    }
+    public function refreshToken()
+    {
+
+    }
 }

@@ -27,14 +27,15 @@ class Jwt
     public function validate($jwt)
     {
         $array = [];
-
         $jwtSplits = explode('.', $jwt);
         if (count($jwtSplits) == 3) {
             $signature = hash_hmac('sha256', $jwtSplits[0] . '.' . $jwtSplits[1], JWT_SECRET_KEY, true);
             $bSig = $this->base64url_encode($signature);
-
             if ($bSig == $jwtSplits[2]) {
-                $array = json_decode($this->base64url_decode($jwtSplits[1]));
+                $decodedPayload = json_decode($this->base64url_decode($jwtSplits[1]));
+                if (isset($decodedPayload->exp) && time() < $decodedPayload->exp) {
+                    $array = $decodedPayload;
+                }
             }
         }
         return $array;

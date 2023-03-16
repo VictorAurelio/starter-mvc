@@ -2,15 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Core\Database\QueryBuilder\MysqlQueryBuilder;
 use App\Core\Database\Connection\ConnectionInterface;
 use App\Core\Validation\Rule\Data\DataSanitizer;
-use App\Core\Database\DataMapper\DataMapper;
-use App\Core\Validation\Rule\RequiredRule;
-use App\Core\Validation\Rule\UniqueRule;
-use App\Core\Validation\Rule\MatchRule;
-use App\Core\Database\DatabaseHandler;
-use App\Core\Validation\Rule\MinRule;
 use App\Core\Validation\Validator;
 use App\Core\Database\DAO\DAO;
 use App\Models\UserModel;

@@ -161,6 +161,26 @@ abstract class QueryBuilder implements QueryBuilderInterface
         $this->key['isSearch'] = false;
         return $this->searchQuery();
     }
+    public function exactSearchQuery(): string
+    {
+        if ($this->isQueryTypeValid('search')) {
+            if (is_array($this->key['selectors']) && $this->key['selectors'] != '') {
+                $this->sqlQuery = "SELECT * FROM {$this->key['table']} WHERE ";
+                if ($this->has('selectors')) {
+                    $values = [];
+                    foreach ($this->key['selectors'] as $selector => $value) {
+                        $values[] = $selector . " = " . ":{$selector}";
+                    }
+                    if (count($this->key['selectors']) >= 1) {
+                        $this->sqlQuery .= implode(" AND ", $values);
+                    }
+                }
+                $this->sqlQuery .= $this->orderByQuery();
+                $this->sqlQuery .= $this->queryOffset();
+            }
+            return $this->sqlQuery;
+        }
+    }
     protected function has(string $key): bool
     {
         return isset($this->key[$key]);

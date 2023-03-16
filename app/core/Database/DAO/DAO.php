@@ -71,6 +71,30 @@ class DAO
     {
         return $this->dataMapper->getLastId();
     }
+    public function where(array $conditions = []): self
+    {
+        $args = [
+            'table' => $this->getSchema(),
+            'type' => 'select',
+            'selectors' => [],
+            'conditions' => $conditions,
+            'params' => []
+        ];
+        $this->queryBuilder->buildQuery($args)->selectQuery();
+        return $this;
+    }
+    public function findByExact(array $fields): ?Object
+    {
+        $sqlQuery = $this->queryBuilder->buildQuery([
+            'type' => 'search',
+            'selectors' => $fields,
+            'table' => $this->getSchema()
+        ])->exactSearchQuery();
+    
+        $this->dataMapper->persist($sqlQuery, $this->dataMapper->buildQueryParameters([], $fields), false);
+    
+        return $this->dataMapper->result();
+    }
 
     /**
      * @inheritdoc

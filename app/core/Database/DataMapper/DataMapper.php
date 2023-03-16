@@ -153,14 +153,17 @@ class DataMapper implements DataMapperInterface
         if ($this->statement)
             return $this->statement->rowCount();
     }
+
     /**
      * Summary of result
-     * @return object
+     * @return object|null
      */
-    public function result(): Object
+    public function result(): ?Object
     {
-        if ($this->statement)
-            return $this->statement->fetch(PDO::FETCH_OBJ);
+        if ($this->statement) {
+            $result = $this->statement->fetch(PDO::FETCH_OBJ);
+            return $result === false ? null : $result;
+        }
     }
 
    /**
