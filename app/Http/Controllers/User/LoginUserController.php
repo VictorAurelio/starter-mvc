@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\User\UserController;
+
 class LoginUserController extends UserController
 {
     public function __construct(UserController $userController)

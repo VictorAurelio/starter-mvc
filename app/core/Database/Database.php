@@ -4,7 +4,6 @@ namespace App\Core;
 
 use App\Core\Database\DatabaseHandler;
 use App\Core\Database\Connection\ConnectionInterface;
-use App\Core\Database\Connection\MysqlConnection;
 
 class Database
 {

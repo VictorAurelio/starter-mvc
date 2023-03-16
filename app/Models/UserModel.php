@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Core\Database\Connection\ConnectionInterface;
-use App\Core\Base\BaseModel;
+use App\Core\Model;
 use App\Models\Jwt;
 
 /**
  * Summary of UserModel
  */
-class UserModel extends BaseModel
+class UserModel extends Model
 {
     protected const TABLESCHEMA = 'users';
     protected const TABLESCHEMAID = 'id';

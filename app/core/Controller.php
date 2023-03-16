@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Core\Base;
+namespace App\Core;
 
-use App\Core\Base\Exceptions\BaseInvalidRequestException;
+use App\Core\Exceptions\AppInvalidRequestException;
 
-class BaseController
+class Controller
 {
     // public function view($view, $data = []) {
     //     extract($data);
@@ -32,7 +32,7 @@ class BaseController
             default => null,
         };
         if (!is_array($data)) {
-            throw new BaseInvalidRequestException('Invalid request data');
+            throw new AppInvalidRequestException('Invalid request data');
         }
         // header('Content-Type: application/json');
         return $data;

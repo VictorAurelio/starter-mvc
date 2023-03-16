@@ -23,7 +23,6 @@ class Authentication
         }
         return $headers;
     }
-
     public function getBearerToken($authorizationHeader)
     {
         if (!empty($authorizationHeader)) {
@@ -33,5 +32,4 @@ class Authentication
         }
         return null;
     }
-
 }

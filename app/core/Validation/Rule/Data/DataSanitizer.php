@@ -2,7 +2,7 @@
 
 namespace App\Core\Validation\Rule\Data;
 
-use App\Core\Base\Exceptions\BaseInvalidArgumentException;
+use App\Core\Exceptions\AppInvalidArgumentException;
 
 class DataSanitizer
 {
@@ -12,7 +12,7 @@ class DataSanitizer
         if(count($dirtyData) > 0) {
             foreach($dirtyData as $key => $value) {
                 if(!isset($key)) {
-                    throw new BaseInvalidArgumentException('Invalid Key');
+                    throw new AppInvalidArgumentException('Invalid Key');
                 }
                 if(!is_array($value)) {
                     $value = trim(stripslashes($value));

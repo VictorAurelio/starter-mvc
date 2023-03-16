@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Core\Base;
+namespace App\Core;
 
-use App\Core\Base\Exceptions\BaseInvalidArgumentException;
-use App\Core\Database\Connection\ConnectionInterface;
-use App\Core\Database\DAO\DAO;
-use App\Core\Database\DatabaseHandler;
-use App\Core\Database\DataMapper\DataMapper;
 use App\Core\Database\QueryBuilder\MysqlQueryBuilder;
+use App\Core\Database\Connection\ConnectionInterface;
+use App\Core\Exceptions\AppInvalidArgumentException;
+use App\Core\Database\DataMapper\DataMapper;
+use App\Core\Database\DatabaseHandler;
+use App\Core\Database\DAO\DAO;
 
-class BaseModel
+class Model
 {
     protected ConnectionInterface $connection;
     protected string $tableSchemaId;
@@ -18,7 +18,7 @@ class BaseModel
     public function __construct(string $tableSchema, string $tableSchemaId, ConnectionInterface $connection)
     {
         if (empty($tableSchema || empty($tableSchemaId))) {
-            throw new BaseInvalidArgumentException('These arguments are required.');
+            throw new AppInvalidArgumentException('These arguments are required.');
         }
         $this->tableSchema = $tableSchema;
         $this->tableSchemaId = $tableSchemaId;

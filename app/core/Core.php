@@ -10,10 +10,10 @@ use App\Core\Config;
 
 class Core
 {
-    private Config $config;
-    private Router $router;
     private ErrorHandlerController $errorController;
     private HomeController $homeController;
+    private Config $config;
+    private Router $router;
     public function __construct(Config $config, Router $router)
     {
         $this->router = $router;

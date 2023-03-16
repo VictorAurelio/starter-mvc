@@ -4,7 +4,6 @@ namespace App\Models;
 
 class Jwt
 {
-
     public function create($data)
     {
         $array = [

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Error;
 
-use App\Core\Base\BaseController;
+use App\Core\Controller;
 
-class ErrorHandlerController extends BaseController
+class ErrorHandlerController extends Controller
 {
     public function pageNotFound()
     {

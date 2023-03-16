@@ -2,7 +2,7 @@
 
 namespace App\Core\Validation\Rule\Data;
 
-use App\Core\Base\Exceptions\BaseInvalidArgumentException;
+use App\Core\Exceptions\AppInvalidArgumentException;
 use App\Core\Validation\Rule\Data\DataSanitizer;
 
 class DataValidator
@@ -10,7 +10,7 @@ class DataValidator
     public function __construct(array $dirtyData)
     {
         if (empty($dirtyData)) {
-            throw new BaseInvalidArgumentException('No data was submitted.');
+            throw new AppInvalidArgumentException('No data was submitted.');
         }
         if (is_array($dirtyData)) {
             foreach ($this->cleanData($dirtyData) as $key => $value) {

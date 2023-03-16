@@ -5,8 +5,8 @@ namespace App\Http\Controllers\User;
 use App\Core\Validation\Exception\ValidationException;
 use App\Core\Database\QueryBuilder\MysqlQueryBuilder;
 use App\Core\Database\Connection\ConnectionInterface;
+use App\Http\Controllers\User\LogoutUserController;
 use App\Core\Validation\Rule\Data\DataSanitizer;
-use App\Http\Controllers\LogoutUserController;
 use App\Core\Database\DataMapper\DataMapper;
 use App\Core\Validation\Rule\RequiredRule;
 use App\Core\Validation\Rule\UniqueRule;
@@ -14,13 +14,13 @@ use App\Core\Validation\Rule\MatchRule;
 use App\Core\Database\DatabaseHandler;
 use App\Core\Validation\Rule\MinRule;
 use App\Core\Validation\Validator;
-use App\Core\Base\BaseController;
 use App\Core\Database\DAO\DAO;
 use App\Core\Authentication;
 use App\Models\UserModel;
+use App\Core\Controller;
 
 
-class UserController extends BaseController
+class UserController extends Controller
 {
     protected ConnectionInterface $connection;
     protected Authentication $authentication;
@@ -52,6 +52,7 @@ class UserController extends BaseController
     {
         // $users = $this->dao->read(['name', 'email']);
         // var_dump($users);
+        $this->redirect('/home');
     }
     public function view($id)
     {
@@ -136,6 +137,22 @@ class UserController extends BaseController
     }
     public function refreshToken()
     {
-
+        // Verify the request method
+        if ($this->getMethod() !== 'POST') {
+            $this->json(['message' => 'Invalid method for refreshing token'], 405);
+        }
+    
+        // Verify if the current JWT is valid
+        $authorizationHeader = $this->authentication->getAuthorizationHeader();
+        $currentJwt = $this->authentication->getBearerToken($authorizationHeader);
+        $userIdFromJwt = $this->userModel->getUserIdFromJwt($currentJwt);
+    
+        if ($userIdFromJwt === false) {
+            $this->json(['message' => 'Invalid token'], 401);
+        }
+    
+        // Create a new JWT and return it
+        $newJwt = $this->userModel->createJwt($userIdFromJwt);
+        $this->json(['jwt' => $newJwt], 200);
     }
 }

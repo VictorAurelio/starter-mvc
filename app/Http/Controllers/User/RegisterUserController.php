@@ -2,26 +2,13 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Core\Database\Connection\ConnectionInterface;
-use App\Core\Validation\Rule\Data\DataSanitizer;
-use App\Core\Validation\Validator;
-use App\Core\Database\DAO\DAO;
-use App\Models\UserModel;
+use App\Http\Controllers\User\UserController;
 
 class RegisterUserController extends UserController
 {
-    protected Validator $validator;
-    protected DataSanitizer $sanitizer;
-    protected UserModel $userModel;
-    protected ConnectionInterface $connection;
-    protected DAO $dao;
     public function __construct(UserController $userController)
     {
-        $this->validator = $userController->validator;
-        $this->sanitizer = $userController->sanitizer;
-        $this->userModel = $userController->userModel;
-        $this->connection = $userController->connection;
-        $this->dao = $userController->dao;
+        parent::__construct();
     }
 
     public function register(array $data): array

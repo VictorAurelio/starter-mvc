@@ -10,8 +10,8 @@ return [
 
     '/user/profile/{id}' => '/user/view/:id',
 
-    '/user/' => '/user/refreshToken/',
+    '/user/logout' => '/user/logoutValidate',
 
-    '/user/logout' => '/user/logoutValidate'
+    '/user/refresh/' => '/user/refreshToken',
 
 ];
