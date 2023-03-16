@@ -13,11 +13,13 @@ class UserModel extends Model
 {
     protected const TABLESCHEMA = 'users';
     protected const TABLESCHEMAID = 'id';
-    private $userId;
     protected ConnectionInterface $connection;
+    protected JWT $jwt;
+    private $userId;
     public function __construct(ConnectionInterface $connection)
     {
         parent::__construct(self::TABLESCHEMA, self::TABLESCHEMAID, $connection);
+        $this->jwt = new JWT();
     }
 
     public function checkCredentials($email, $password)
@@ -32,8 +34,7 @@ class UserModel extends Model
     }
     public function getUserIdFromJwt($token)
     {
-        $jwt = new Jwt();
-        $info = $jwt->validate($token);
+        $info = $this->jwt->validate($token);
         if (isset($info->userId)) {
             return $info->userId;
         } else {
@@ -50,8 +51,7 @@ class UserModel extends Model
     }
     public function validateJwt($token)
     {
-        $jwt = new Jwt();
-        $info = $jwt->validate($token);
+        $info = $this->jwt->validate($token);
         // var_dump($info);
         if (isset($info->userId) && isset($info->exp) && time() < $info->exp) {
             $this->userId = $info->userId;
@@ -62,9 +62,8 @@ class UserModel extends Model
     }
     public function createJwt($userId)
     {
-        $jwt = new Jwt();
         $expTime = time() + JWT_EXPIRATION_TIME;
-        $token = $jwt->create(['userId' => $userId, 'exp' => $expTime]);
+        $token = $this->jwt->create(['userId' => $userId, 'exp' => $expTime]);
         return $token;
     }
 }
