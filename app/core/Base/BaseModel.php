@@ -11,9 +11,9 @@ use App\Core\Database\QueryBuilder\MysqlQueryBuilder;
 
 class BaseModel
 {
-    protected string $tableSchema;
-    protected string $tableSchemaId;
     protected ConnectionInterface $connection;
+    protected string $tableSchemaId;
+    protected string $tableSchema;
     protected DAO $dao;
     public function __construct(string $tableSchema, string $tableSchemaId, ConnectionInterface $connection)
     {

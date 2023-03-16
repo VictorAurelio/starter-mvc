@@ -6,6 +6,7 @@ use App\Core\Validation\Exception\ValidationException;
 use App\Core\Database\QueryBuilder\MysqlQueryBuilder;
 use App\Core\Database\Connection\ConnectionInterface;
 use App\Core\Validation\Rule\Data\DataSanitizer;
+use App\Http\Controllers\LogoutUserController;
 use App\Core\Database\DataMapper\DataMapper;
 use App\Core\Validation\Rule\RequiredRule;
 use App\Core\Validation\Rule\UniqueRule;
@@ -15,16 +16,17 @@ use App\Core\Validation\Rule\MinRule;
 use App\Core\Validation\Validator;
 use App\Core\Base\BaseController;
 use App\Core\Database\DAO\DAO;
-use App\Http\Controllers\LogoutUserController;
+use App\Core\Authentication;
 use App\Models\UserModel;
 
 
 class UserController extends BaseController
 {
-    protected Validator $validator;
-    protected DataSanitizer $sanitizer;
-    protected UserModel $userModel;
     protected ConnectionInterface $connection;
+    protected Authentication $authentication;
+    protected DataSanitizer $sanitizer;
+    protected Validator $validator;
+    protected UserModel $userModel;
     protected DAO $dao;
     public function __construct()
     {
@@ -38,11 +40,12 @@ class UserController extends BaseController
         );
         $this->validator = new Validator();
         $this->validator
+            ->addRule('unique', new UniqueRule($this->connection, 'users', 'email'))
             ->addRule('required', new RequiredRule())
             ->addRule('match', new MatchRule())
-            ->addRule('unique', new UniqueRule($this->connection, 'users', 'email'))
             ->addRule('min', new MinRule());
 
+        $this->authentication = new Authentication();
         $this->sanitizer = new DataSanitizer();
     }
     public function index()
@@ -114,9 +117,22 @@ class UserController extends BaseController
         }
     }
 
-    public function logoutValidate($token)
+    public function logoutValidate()
     {
-        (new LogoutUserController($this))->logout($token);
+        if($this->getMethod() !== 'POST') {
+            $this->json(['message' => 'Invalid method for logging out'], 405);
+        }
+        $authorizationHeader = $this->authentication->getAuthorizationHeader();
+        $jwt = $this->authentication->getBearerToken($authorizationHeader);
+
+        $logoutUserController = new LogoutUserController($this);
+        $isLogoutSuccessful = $logoutUserController->logout($jwt);
+
+        if($isLogoutSuccessful) {
+            $this->json(['message' => 'Logout successful'], 200);
+        }else {
+            $this->json(['message' => 'Error logging out. Please try again.'], 400);
+        }
     }
     public function refreshToken()
     {
