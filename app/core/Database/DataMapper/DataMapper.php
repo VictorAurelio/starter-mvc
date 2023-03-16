@@ -222,6 +222,5 @@ class DataMapper implements DataMapperInterface
            // $this->revert();
            throw new PDOException('Data persistent error ' . $e->getMessage());
         }
-
     }
 }

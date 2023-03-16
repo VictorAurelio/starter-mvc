@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Core\Helpers;
+namespace App\Core\Validation\Rule\Data;
+
 use App\Core\Base\Exceptions\BaseInvalidArgumentException;
 
-class Sanitizer
+class DataSanitizer
 {
     public static function clean(array $dirtyData): array
     {
@@ -21,7 +22,7 @@ class Sanitizer
                         $input[$key] = isset($value) ? filter_var($value, FILTER_SANITIZE_NUMBER_INT) : '';
                         break;
                     case is_string($value):
-                        $input[$key] = isset($value) ? filter_var($value, htmlspecialchars($value)) : '';
+                        $input[$key] = isset($value) ? filter_var($value, FILTER_UNSAFE_RAW) : '';
                         break;
                     case is_array($value):
                         if(count($value) > 0) {
@@ -29,15 +30,15 @@ class Sanitizer
                                 if(is_int($arrValue)) {
                                     $input[$arrKey] = isset($arrValue) ? filter_var($arrValue, FILTER_SANITIZE_NUMBER_INT) : '';
                                 }else {
-                                    $input[$arrKey] = isset($arrValue) ? filter_var($value, htmlspecialchars($value)) : '';
+                                    $input[$arrKey] = isset($arrValue) ? filter_var($value, FILTER_UNSAFE_RAW) : '';
                                 }
                             }
                         }
-                        break;                
+                    break;                
                 }
             }
             if(isset($input) && $input != '') {
-                return $input;
+                return (array)$input;
             }
         }
     }

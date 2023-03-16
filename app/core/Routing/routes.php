@@ -10,4 +10,6 @@ return [
 
     '/user/profile/{id}' => '/user/view/:id',
 
+    '/users/test' => '/user/search/'
+
 ];

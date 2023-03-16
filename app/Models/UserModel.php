@@ -22,13 +22,11 @@ class UserModel extends BaseModel
 
     public function checkCredentials($email, $password)
     {   
-        $user = $this->dao->search(['email'], ['email' => $email]);
-        if ($user && count($user) > 0) {
-            $user = $user[0];
-            if (password_verify($password, $user['password'])) {
-                // var_dump($this->userId);               
-                $this->userId = $user['id'];
-                return $user;
+        $user = $this->dao->search(['email'], ['email' => $email], true);
+        if (count($user) > 0 && $user[0]['email'] === $email) {
+            if (password_verify($password, $user[0]['password'])) {
+                $this->userId = $user[0]['id'];
+                return $user[0];
             }
         }
         return json_encode(['error' => 'Invalid email or password']);

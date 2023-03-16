@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Core\Base;
+namespace App\Core\Validation\Rule\Data;
 
 use App\Core\Base\Exceptions\BaseInvalidArgumentException;
-use App\Core\Helpers\Sanitizer;
+use App\Core\Validation\Rule\Data\DataSanitizer;
 
-class BaseEntity
+class DataValidator
 {
     public function __construct(array $dirtyData)
     {
@@ -20,7 +20,7 @@ class BaseEntity
     }
     private function cleanData(array $dirtyData) : array
     {
-        $cleanData = Sanitizer::clean($dirtyData);
+        $cleanData = DataSanitizer::clean($dirtyData);
         if($cleanData) {
             return $cleanData;
         }

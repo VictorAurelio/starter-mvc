@@ -4,6 +4,9 @@ namespace App\Core\Database\QueryBuilder;
 
 use App\Core\Database\QueryBuilder\Exception\QueryBuilderInvalidArgumentException;
 
+/**
+ * Summary of QueryBuilder
+ */
 abstract class QueryBuilder implements QueryBuilderInterface
 {
     protected array $key = [];
@@ -125,6 +128,10 @@ abstract class QueryBuilder implements QueryBuilderInterface
         }
         return false;
     }
+    /**
+     * Summary of searchQuery
+     * @return string
+     */
     public function searchQuery(): string
     {
         if ($this->isQueryTypeValid('search')) {
@@ -133,7 +140,11 @@ abstract class QueryBuilder implements QueryBuilderInterface
                 if ($this->has('selectors')) {
                     $values = [];
                     foreach ($this->key['selectors'] as $selector) {
-                        $values[] = $selector . " LIKE " . ":{$selector}";
+                        if ($this->key['isSearch'] === false) {
+                            $values[] = $selector . " = " . ":{$selector}";
+                        } else {
+                            $values[] = $selector . " LIKE " . ":{$selector}";
+                        }
                     }
                     if (count($this->key['selectors']) >= 1) {
                         $this->sqlQuery .= implode(" OR ", $values);
@@ -144,6 +155,11 @@ abstract class QueryBuilder implements QueryBuilderInterface
             }
             return $this->sqlQuery;
         }
+    }
+    public function searchQueryExact(): string
+    {
+        $this->key['isSearch'] = false;
+        return $this->searchQuery();
     }
     protected function has(string $key): bool
     {

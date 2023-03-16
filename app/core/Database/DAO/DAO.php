@@ -107,6 +107,8 @@ class DAO
         try {
             $args = ['table' => $this->getSchema(), 'type' => 'select', 'selectors' => $selectors, 'conditions' => $conditions, 'params' => $parameters, 'extras' => $optional];
             $query = $this->queryBuilder->buildQuery($args)->selectQuery();
+            var_dump($query);
+            var_dump($this->dataMapper->persist($query, $this->dataMapper->buildQueryParameters($conditions, $parameters)));
             $this->dataMapper->persist($query, $this->dataMapper->buildQueryParameters($conditions, $parameters));
             if ($this->dataMapper->numRows() > 0) {
                 return $this->dataMapper->results();
@@ -165,10 +167,11 @@ class DAO
      * @return array
      * @throws DataLayerException
      */
-    public function search(array $selectors = [], array $conditions = []): array
+    public function search(array $selectors = [], array $conditions = [], bool $exact = false): array
     {
-        $args = ['table' => $this->getSchema(), 'type' => 'search', 'selectors' => $selectors, 'conditions' => $conditions];
-        $query = $this->queryBuilder->buildQuery($args)->searchQuery();
+        $args = ['table' => $this->getSchema(), 'type' => 'search', 'selectors' => $selectors, 'conditions' => $conditions, 'isSearch' => !$exact];
+        $query = $exact ? $this->queryBuilder->buildQuery($args)->searchQueryExact() : $this->queryBuilder->buildQuery($args)->searchQuery();
+        var_dump($query);
         $this->dataMapper->persist($query, $this->dataMapper->buildQueryParameters($conditions), true);
         return ($this->dataMapper->numRows() >= 1) ? $this->dataMapper->results() : array();
     }
@@ -190,9 +193,7 @@ class DAO
         } catch (Throwable $throwable) {
             throw $throwable;
         }
-    }
-    
-
+    }   
     /**
      * @param string $type
      * @return mixed
