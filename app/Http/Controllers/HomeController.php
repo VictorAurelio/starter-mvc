@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Http\Controllers;
 
 use App\Core\Database\DatabaseHandler;
 use App\Core\Base\BaseController;
@@ -29,5 +29,6 @@ class HomeController extends BaseController
 
     public function index()
     {
+        echo 'home';
     }
 }

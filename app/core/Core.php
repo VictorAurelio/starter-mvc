@@ -2,10 +2,8 @@
 
 namespace App\Core;
 
-use App\Core\Database\Connection\MysqlConnection;
-use App\Core\Database\DataMapper\DataMapper;
-use App\Controllers\ErrorHandlerController;
-use App\Controllers\HomeController;
+use App\Http\Controllers\Error\ErrorHandlerController;
+use App\Http\Controllers\HomeController;
 use App\Core\Routing\Router;
 use App\Core\Config;
 
@@ -39,13 +37,17 @@ class Core
         $this->router->loadRoutes('routes.php');
         $url = $this->router->checkRoutes($url);
 
+        // var_dump($url);
         if (!empty($url) && $url != '/') {
             $url = explode('/', $url);
             array_shift($url);
 
-            $currentController = "\\App\\Controllers\\" . (ucfirst($url[0]) . 'Controller');
+            $currentController = match (true) {
+                $url[0] === 'home' => "\App\Http\Controllers\HomeController",
+                default => "\\App\\Http\\Controllers\\" . ucfirst($url[0]) . "\\" . (ucfirst($url[0]) . 'Controller'),
+            };
             array_shift($url);
-            // var_dump($currentController);
+
             $currentAction = (isset($url[0]) && !empty($url[0])) ? $url[0]  : DEFAULT_ACTION;
             array_shift($url);
 

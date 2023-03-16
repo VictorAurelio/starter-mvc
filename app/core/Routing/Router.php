@@ -48,7 +48,6 @@ class Router extends Core
                 break;
             }
         }
-        // var_dump($url);
         return $url;
     }
 }
